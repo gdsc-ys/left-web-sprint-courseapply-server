@@ -18,7 +18,7 @@ myCourseRouter.delete("/:id", (req, res) => {
 });
 
 /**
- * 신청 내역 List
+ * 신청 내역 목록 가져오기
  */
 myCourseRouter.get("/", (req, res) => {
   res.send("My course list");
