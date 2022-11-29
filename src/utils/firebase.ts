@@ -26,13 +26,19 @@ const validateDB = () => {
 /**
  * LIST
  */
-export const listData = async ({ collection }: { collection: string }) => {
+export const listData = async <T>({ collection }: { collection: string }) => {
   validateDB();
 
   const ref = db.collection(collection);
   const data = await ref.get();
 
-  return data;
+  const list: T[] = [];
+
+  data.forEach((doc) => {
+    list.push(doc.data() as T);
+  });
+
+  return list;
 };
 
 /**
