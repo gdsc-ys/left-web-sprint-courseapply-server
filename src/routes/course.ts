@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { Course } from "../interfaces/Course";
+import { postData } from "../utils/firebase";
 
 const courseRouter = Router();
 
