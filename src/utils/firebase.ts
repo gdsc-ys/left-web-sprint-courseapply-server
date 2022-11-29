@@ -30,15 +30,15 @@ export const listData = async <T>({ collection }: { collection: string }) => {
   validateDB();
 
   const ref = db.collection(collection);
-  const data = await ref.get();
+  const snapshot = await ref.get();
 
-  const list: T[] = [];
+  const data: T[] = [];
 
-  data.forEach((doc) => {
-    list.push(doc.data() as T);
+  snapshot.forEach((doc) => {
+    data.push(doc.data() as T);
   });
 
-  return list;
+  return data;
 };
 
 /**
@@ -54,9 +54,10 @@ export const getData = async <T>({
   validateDB();
 
   const ref = db.collection(collection).doc(doc);
-  const data = await ref.get();
+  const snapshot = await ref.get();
+  const data = snapshot.data() as T;
 
-  return data.data() as T;
+  return data;
 };
 
 /**
