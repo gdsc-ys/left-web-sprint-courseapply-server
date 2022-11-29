@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Course } from "../interfaces/Course";
-import { postData } from "../utils/firebase";
+import { getData, listData, postData } from "../utils/firebase";
 
 const courseRouter = Router();
 
@@ -12,8 +12,14 @@ export interface GetCoursesRequest
 
 export interface GetCoursesResponse extends Array<Course> {}
 
-courseRouter.get("/", (req, res) => {
-  res.send("Course List");
+courseRouter.get("/", async (req, res) => {
+  const { degree, college, major } = req.query as GetCoursesRequest;
+
+  const courses = await listData<Course>({
+    collection: "courses",
+  });
+
+  res.send(courses);
 });
 
 /**
@@ -26,8 +32,17 @@ export interface GetCollegesAndMajorsResponse {
   majors: string[];
 }
 
-courseRouter.get("/colleges-and-majors", (req, res) => {
-  res.send("Colleges and Majors");
+courseRouter.get("/colleges-and-majors", async (req, res) => {
+  const courses = await listData<Course>({
+    collection: "courses",
+  });
+
+  const colleges = courses.map((course) => course.college);
+  const majors = courses.map((course) => course.major);
+
+  const response: GetCollegesAndMajorsResponse = { colleges, majors };
+
+  res.send(response);
 });
 
 /**
@@ -37,10 +52,15 @@ export interface GetCourseRequest extends Pick<Course, "id"> {}
 
 export interface GetCourseResponse extends Course {}
 
-courseRouter.get("/:id", (req, res) => {
-  const courseId = req.params.id;
+courseRouter.get("/:id", async (req, res) => {
+  const { id } = req.params as GetCourseRequest;
 
-  res.send(`Course ${courseId}`);
+  const course = await getData<Course>({
+    collection: "courses",
+    doc: id,
+  });
+
+  res.send(course);
 });
 
 export default courseRouter;
