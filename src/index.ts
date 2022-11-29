@@ -2,12 +2,15 @@ import express from "express";
 import courseRouter from "./routes/course";
 import healthRouter from "./routes/health";
 import myCourseRouter from "./routes/mycourse";
+import { initializeFirebase } from "./utils/firebase";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+initializeFirebase();
 
 /**
  * Health Check
