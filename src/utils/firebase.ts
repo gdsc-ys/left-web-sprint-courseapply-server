@@ -5,6 +5,7 @@ import {
   type WithFieldValue,
   type Firestore,
   type WhereFilterOp,
+  type Query,
 } from "firebase-admin/firestore";
 import serviceAccount from "../data/serviceAccount.json";
 
@@ -29,15 +30,20 @@ const validateDB = () => {
  */
 export const listData = async <T>({
   collection,
-  query,
+  queries,
 }: {
   collection: string;
-  query?: [string, WhereFilterOp, any];
+  queries?: [string, WhereFilterOp, any][];
 }) => {
   validateDB();
 
   const ref = db.collection(collection);
-  const queryRef = query ? ref.where(...query) : ref;
+  const queryRef = queries
+    ? queries.reduce(
+        (ref, query) => ref.where(...query),
+        ref as Query<DocumentData>
+      )
+    : ref;
 
   const snapshot = await queryRef.get();
 
