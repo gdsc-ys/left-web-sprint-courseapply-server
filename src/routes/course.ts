@@ -17,6 +17,11 @@ courseRouter.get("/", async (req, res) => {
 
   const courses = await listData<Course>({
     collection: "courses",
+    queries: [
+      ["degree", "==", degree],
+      ["college", "==", college],
+      ["major", "==", major],
+    ],
   });
 
   res.send(courses);

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { Course } from "../interfaces/Course";
+import { deleteData, listData, postData } from "../utils/firebase";
 
 const myCourseRouter = Router();
 
@@ -10,8 +11,16 @@ export interface ApplyRequest extends Pick<Course, "id"> {}
 
 export type ApplyResponse = Course[];
 
-myCourseRouter.post("/", (req, res) => {
-  res.send("Applied");
+myCourseRouter.post("/", async (req, res) => {
+  const { id } = req.body as ApplyRequest;
+
+  await postData<ApplyRequest>({
+    collection: "mycourses",
+    doc: id,
+    data: { id },
+  });
+
+  res.sendStatus(200);
 });
 
 /**
@@ -21,9 +30,12 @@ export interface WithdrawRequest extends Pick<Course, "id"> {}
 
 export type WithdrawResponse = Course[];
 
-myCourseRouter.delete("/:id", (req, res) => {
-  const courseId = req.params.id;
-  res.send(`${courseId} Withdrew`);
+myCourseRouter.delete("/:id", async (req, res) => {
+  const { id } = req.params as WithdrawRequest;
+
+  await deleteData({ collection: "mycourses", doc: id });
+
+  res.sendStatus(200);
 });
 
 /**
@@ -33,8 +45,12 @@ export type GetAppliedCoursesRequest = void;
 
 export interface GetAppliedCoursesResponse extends Array<Course> {}
 
-myCourseRouter.get("/", (req, res) => {
-  res.send("My course list");
+myCourseRouter.get("/", async (req, res) => {
+  const myCourses = await listData<Course>({
+    collection: "mycourses",
+  });
+
+  res.send(myCourses);
 });
 
 export default myCourseRouter;

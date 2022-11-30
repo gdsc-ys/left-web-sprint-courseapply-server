@@ -95,6 +95,23 @@ export const postData = async <T>({
 };
 
 /**
+ * DELETE
+ */
+export const deleteData = async ({
+  collection,
+  doc,
+}: {
+  collection: string;
+  doc: string;
+}) => {
+  validateDB();
+
+  const ref = db.collection(collection).doc(doc);
+
+  await ref.delete();
+};
+
+/**
  * example
  * {
     id: "CSI2011",
