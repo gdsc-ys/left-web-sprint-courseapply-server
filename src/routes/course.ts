@@ -16,15 +16,15 @@ export interface GetCoursesResponse extends Array<Course> {}
 courseRouter.get("/", async (req, res) => {
   const { degree, college, major } = req.query as GetCoursesRequest;
 
-  const queries = [...(degree ? [["degree", "==", degree]] : [])] as Query[];
+  const queries = [
+    ...(degree ? [["degree", "==", degree]] : []),
+    ...(college ? [["college", "==", college]] : []),
+    ...(major ? [["major", "==", major]] : []),
+  ] as Query[];
 
   const courses = await listData<Course>({
     collection: "courses",
-    queries: [
-      ["degree", "==", degree],
-      ["college", "==", college],
-      ["major", "==", major],
-    ],
+    queries,
   });
 
   res.send(courses);
