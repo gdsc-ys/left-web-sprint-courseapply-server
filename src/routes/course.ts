@@ -45,8 +45,8 @@ courseRouter.get("/colleges-and-majors", async (req, res) => {
     collection: "courses",
   });
 
-  const colleges = courses.map((course) => course.college);
-  const majors = courses.map((course) => course.major);
+  const colleges = [...new Set(courses.map((course) => course.college))];
+  const majors = [...new Set(courses.map((course) => course.major))];
 
   const response: GetCollegesAndMajorsResponse = { colleges, majors };
 
