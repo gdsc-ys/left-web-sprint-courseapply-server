@@ -47,11 +47,7 @@ export const listData = async <T>({
 
   const snapshot = await queryRef.get();
 
-  const data: T[] = [];
-
-  snapshot.forEach((doc) => {
-    data.push(doc.data() as T);
-  });
+  const data = snapshot.docs.map((doc) => doc.data() as T);
 
   return data;
 };
@@ -110,19 +106,3 @@ export const deleteData = async ({
 
   await ref.delete();
 };
-
-/**
- * example
- * {
-    id: "CSI2011",
-    name: "CSI2011",
-    degree: Degree.UNDERGRADUATE,
-    college: "공과대학",
-    major: "컴퓨터과학과",
-    professor: "교수님",
-    times: [{ dayOfWeek: DayOfWeek.MONDAY, startPeriod: 1, endPeriod: 3 }],
-    classroom: "공A000",
-    personnel: 70,
-    credit: 3,
-  }
- */
