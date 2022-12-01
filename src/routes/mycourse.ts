@@ -46,7 +46,18 @@ myCourseRouter.delete("/:id", async (req, res) => {
 
   await deleteData({ collection: "mycourses", doc: id });
 
-  res.sendStatus(200);
+  const myCourseIds = (
+    await listData<Pick<Course, "id">>({
+      collection: "mycourses",
+    })
+  ).map(({ id }) => id);
+
+  const myCourses = await listData<Course>({
+    collection: "courses",
+    queries: [["id", "in", myCourseIds]],
+  });
+
+  res.send(myCourses);
 });
 
 /**
