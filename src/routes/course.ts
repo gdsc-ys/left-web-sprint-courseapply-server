@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { Course } from "../interfaces/Course";
-import { getData, listData, postData } from "../utils/firebase";
+import type { Course } from "../interfaces/Course";
+import type { Query } from "../interfaces/Firebase";
+import { getData, listData } from "../utils/firebase";
 
 const courseRouter = Router();
 
@@ -14,6 +15,8 @@ export interface GetCoursesResponse extends Array<Course> {}
 
 courseRouter.get("/", async (req, res) => {
   const { degree, college, major } = req.query as GetCoursesRequest;
+
+  const queries = [...(degree ? [["degree", "==", degree]] : [])] as Query[];
 
   const courses = await listData<Course>({
     collection: "courses",

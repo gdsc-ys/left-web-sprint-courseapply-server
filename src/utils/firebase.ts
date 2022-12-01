@@ -1,13 +1,7 @@
 import { initializeApp, cert, type ServiceAccount } from "firebase-admin/app";
-import {
-  type DocumentData,
-  getFirestore,
-  type WithFieldValue,
-  type Firestore,
-  type WhereFilterOp,
-  type Query,
-} from "firebase-admin/firestore";
+import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import serviceAccount from "../data/serviceAccount.json";
+import type { Data, Query, QueryRef } from "../interfaces/Firebase";
 
 let db: Firestore;
 
@@ -33,16 +27,13 @@ export const listData = async <T>({
   queries,
 }: {
   collection: string;
-  queries?: [string, WhereFilterOp, any][];
+  queries?: Query[];
 }) => {
   validateDB();
 
   const ref = db.collection(collection);
   const queryRef = queries
-    ? queries.reduce(
-        (ref, query) => ref.where(...query),
-        ref as Query<DocumentData>
-      )
+    ? queries.reduce((ref, query) => ref.where(...query), ref as QueryRef)
     : ref;
 
   const snapshot = await queryRef.get();
@@ -87,7 +78,7 @@ export const postData = async <T>({
 
   const ref = db.collection(collection).doc(doc);
 
-  await ref.set(data as WithFieldValue<DocumentData>);
+  await ref.set(data as Data);
 };
 
 /**
