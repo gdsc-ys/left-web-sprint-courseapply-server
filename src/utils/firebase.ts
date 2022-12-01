@@ -57,7 +57,7 @@ export const getData = async <T>({
 
   const ref = db.collection(collection).doc(doc);
   const snapshot = await ref.get();
-  const data = snapshot.data() as T;
+  const data = snapshot.data() as T | undefined;
 
   return data;
 };

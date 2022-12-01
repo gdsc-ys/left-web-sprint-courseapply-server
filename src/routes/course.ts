@@ -68,6 +68,10 @@ courseRouter.get("/:id", async (req, res) => {
     doc: id,
   });
 
+  if (!course) {
+    return res.sendStatus(404);
+  }
+
   res.send(course);
 });
 

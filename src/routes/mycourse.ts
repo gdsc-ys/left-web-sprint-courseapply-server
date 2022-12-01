@@ -4,6 +4,25 @@ import { deleteData, listData, postData } from "../utils/firebase";
 
 const myCourseRouter = Router();
 
+const getMyCourses = async () => {
+  const myCourseIds = (
+    await listData<Pick<Course, "id">>({
+      collection: "mycourses",
+    })
+  ).map(({ id }) => id);
+
+  if (!myCourseIds.length) {
+    return [];
+  }
+
+  const myCourses = await listData<Course>({
+    collection: "courses",
+    queries: [["id", "in", myCourseIds]],
+  });
+
+  return myCourses;
+};
+
 /**
  * 수강 신청
  */
@@ -20,16 +39,7 @@ myCourseRouter.post("/", async (req, res) => {
     data: { id },
   });
 
-  const myCourseIds = (
-    await listData<Pick<Course, "id">>({
-      collection: "mycourses",
-    })
-  ).map(({ id }) => id);
-
-  const myCourses = await listData<Course>({
-    collection: "courses",
-    queries: [["id", "in", myCourseIds]],
-  });
+  const myCourses = await getMyCourses();
 
   res.send(myCourses);
 });
@@ -46,16 +56,7 @@ myCourseRouter.delete("/:id", async (req, res) => {
 
   await deleteData({ collection: "mycourses", doc: id });
 
-  const myCourseIds = (
-    await listData<Pick<Course, "id">>({
-      collection: "mycourses",
-    })
-  ).map(({ id }) => id);
-
-  const myCourses = await listData<Course>({
-    collection: "courses",
-    queries: [["id", "in", myCourseIds]],
-  });
+  const myCourses = await getMyCourses();
 
   res.send(myCourses);
 });
@@ -65,19 +66,10 @@ myCourseRouter.delete("/:id", async (req, res) => {
  */
 export type GetAppliedCoursesRequest = void;
 
-export interface GetAppliedCoursesResponse extends Array<Course> {}
+export type GetAppliedCoursesResponse = Course[];
 
 myCourseRouter.get("/", async (req, res) => {
-  const myCourseIds = (
-    await listData<Pick<Course, "id">>({
-      collection: "mycourses",
-    })
-  ).map(({ id }) => id);
-
-  const myCourses = await listData<Course>({
-    collection: "courses",
-    queries: [["id", "in", myCourseIds]],
-  });
+  const myCourses = await getMyCourses();
 
   res.send(myCourses);
 });
