@@ -68,8 +68,15 @@ export type GetAppliedCoursesRequest = void;
 export interface GetAppliedCoursesResponse extends Array<Course> {}
 
 myCourseRouter.get("/", async (req, res) => {
+  const myCourseIds = (
+    await listData<Pick<Course, "id">>({
+      collection: "mycourses",
+    })
+  ).map(({ id }) => id);
+
   const myCourses = await listData<Course>({
-    collection: "mycourses",
+    collection: "courses",
+    queries: [["id", "in", myCourseIds]],
   });
 
   res.send(myCourses);
